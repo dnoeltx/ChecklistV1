@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Row 1: checked box -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M27,25h14v14h-14z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FF6650A4"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M29,33 L32.5,36.5 L39,27.5" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M50,28h32v8h-32z" />
+
+    <!-- Row 2: unchecked box -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="3"
+        android:pathData="M27,47h14v14h-14z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M50,50h32v8h-32z" />
+
+    <!-- Row 3: unchecked box -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="3"
+        android:pathData="M27,69h14v14h-14z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M50,72h32v8h-32z" />
+</vector>
