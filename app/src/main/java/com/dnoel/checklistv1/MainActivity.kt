@@ -226,6 +226,13 @@ fun ChecklistScreen(listId: Int, listName: String, onBack: () -> Unit) {
                 }
             }
 
+            if (localItems.isEmpty()) {
+                Text(
+                    text = "No items yet — add one",
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+
             LazyColumn(
                 state = lazyListState,
                 modifier = Modifier.padding(top = 16.dp)
