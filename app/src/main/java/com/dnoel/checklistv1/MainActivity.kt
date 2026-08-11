@@ -124,6 +124,13 @@ fun ListsScreen(
                 }
             }
 
+            if (localLists.isEmpty()) {
+                Text(
+                    text = "No lists yet — create one above",
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+
             LazyColumn(
                 state = lazyListState,
                 modifier = Modifier.padding(top = 16.dp)
