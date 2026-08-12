@@ -126,7 +126,7 @@ fun ListsScreen(
 
             if (localLists.isEmpty()) {
                 Text(
-                    text = "No lists yet — create one above",
+                    text = "Nothing here yet — create your first list",
                     modifier = Modifier.padding(top = 16.dp)
                 )
             }
