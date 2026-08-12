@@ -128,7 +128,7 @@ fun ListsScreen(
 
             if (localLists.isEmpty()) {
                 Text(
-                    text = "You don't have any lists yet. Add one above to get started.",
+                    text = "Nothing here yet — create your first list",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
