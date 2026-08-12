@@ -1,12 +1,7 @@
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+local.properties
 .DS_Store
 /build
 **/build
@@ -14,4 +9,18 @@
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+
+# IDE (Android Studio / IntelliJ) files.
+#
+# Ignore everything under .idea/ — it is per-developer machine state (selected
+# run target, connected devices, local SDK paths) and does not belong in the
+# repository. The one exception is the shared code style, which is a
+# project-wide decision worth version-controlling.
+#
+# Note the order: .idea/codeStyles must be re-included before its contents can
+# be, because git cannot un-ignore a file inside an ignored directory.
+.idea/*
+!/.idea/codeStyles
+/.idea/codeStyles/*
+!/.idea/codeStyles/Project.xml
+!/.idea/codeStyles/codeStyleConfig.xml
