@@ -1,0 +1,21 @@
+# Let git normalize line endings: LF in the repository, native in working copies.
+# This makes behaviour a property of the repo rather than of each developer's
+# core.autocrlf setting.
+* text=auto
+
+# Shell scripts must keep LF even when checked out on Windows — a CRLF here
+# makes Linux fail with "bad interpreter: /bin/sh^M".
+*.sh      text eol=lf
+gradlew   text eol=lf
+
+# Windows batch files must keep CRLF.
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+
+# Never touch these.
+*.jar      binary
+*.png      binary
+*.jpg      binary
+*.jpeg     binary
+*.webp     binary
+*.keystore binary
