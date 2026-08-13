@@ -1,6 +1,5 @@
 package com.dnoel.checklistv1
 
-import android.app.Application
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,20 +33,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChecklistScreen(listId: Int, listName: String, onBack: () -> Unit) {
-    val application = LocalContext.current.applicationContext as Application
     val viewModel: ChecklistViewModel = viewModel(
         key = "checklist_$listId",
-        factory = viewModelFactory {
-            initializer { ChecklistViewModel(application, listId) }
-        }
+        factory = ChecklistViewModel.factory(LocalContext.current.applicationContext, listId)
     )
     val dbItems by viewModel.items.collectAsState(initial = emptyList())
     val visibleDbItems = dbItems.filter { !it.isChecked }
