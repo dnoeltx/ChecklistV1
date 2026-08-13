@@ -1,8 +1,18 @@
 # List Manager
 
+[![CI](https://github.com/dnoeltx/ChecklistV1/actions/workflows/ci.yml/badge.svg)](https://github.com/dnoeltx/ChecklistV1/actions/workflows/ci.yml)
+
 A multi-list checklist app for Android — create separate lists (e.g. "Grocery", "To-do"), add items, check them off, and reorder everything with drag-and-drop. Data persists locally on the device.
 
 Built as a hands-on project for learning modern Android development with AI-assisted coding.
+
+## Screenshots
+
+| Lists | Items | Lists (light) | Items (light) |
+|:--:|:--:|:--:|:--:|
+| <img src="docs/screenshots/lists-dark.png" width="200" alt="List overview in dark theme, showing three lists with remaining-item counts"> | <img src="docs/screenshots/items-dark.png" width="200" alt="Items within the Household list in dark theme, each with a checkbox and drag handle"> | <img src="docs/screenshots/lists-light.png" width="200" alt="List overview in light theme"> | <img src="docs/screenshots/items-light.png" width="200" alt="Items within the Household list in light theme"> |
+
+The app follows the system light/dark setting — the same screens are shown in both above.
 
 ## Features
 
