@@ -1,17 +1,20 @@
 package com.dnoel.checklistv1
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.content.Context
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 data class ListWithCount(val list: TodoList, val remainingCount: Int)
 
-class ListsViewModel(application: Application) : AndroidViewModel(application) {
-    private val listDao = AppDatabase.getInstance(application).listDao()
-    private val checklistDao = AppDatabase.getInstance(application).checklistDao()
+class ListsViewModel(
+    private val listDao: ListDao,
+    private val checklistDao: ChecklistDao
+) : ViewModel() {
 
     val lists: Flow<List<ListWithCount>> = combine(
         listDao.getAll(),
@@ -37,6 +40,16 @@ class ListsViewModel(application: Application) : AndroidViewModel(application) {
     fun reorder(newOrder: List<TodoList>) {
         viewModelScope.launch {
             listDao.updateAll(newOrder.mapIndexed { index, list -> list.copy(position = index) })
+        }
+    }
+
+    companion object {
+        /** Builds a ListsViewModel backed by the real Room database. */
+        fun factory(context: Context) = viewModelFactory {
+            initializer {
+                val db = AppDatabase.getInstance(context)
+                ListsViewModel(db.listDao(), db.checklistDao())
+            }
         }
     }
 }
