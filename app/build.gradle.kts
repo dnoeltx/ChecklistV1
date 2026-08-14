@@ -4,6 +4,17 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+// Release signing is driven entirely by environment variables so that no
+// keystore path or password ever lives in the repository. On a normal dev
+// machine these are unset, the signing config is not created, and only debug
+// builds (auto-signed with the local debug key) are possible.
+val releaseKeystore = System.getenv("KEYSTORE_PATH")?.let(::file)
+
+// Version is supplied by the release workflow, derived from the git tag.
+// The defaults are only used for local/debug builds.
+val appVersionName = (findProperty("appVersionName") as String?) ?: "1.0-dev"
+val appVersionCode = (findProperty("appVersionCode") as String?)?.toInt() ?: 1
+
 android {
     namespace = "com.dnoel.checklistv1"
     compileSdk {
@@ -14,14 +25,28 @@ android {
         applicationId = "com.dnoel.checklistv1"
         minSdk = 24
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = appVersionCode
+        versionName = appVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (releaseKeystore != null) {
+            create("release") {
+                storeFile = releaseKeystore
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            // Null when the keystore env vars are absent, which keeps local
+            // debug work unaffected instead of failing the whole build script.
+            signingConfig = signingConfigs.findByName("release")
             optimization {
                 enable = false
             }

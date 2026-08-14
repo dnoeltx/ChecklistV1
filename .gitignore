@@ -10,6 +10,15 @@ local.properties
 .externalNativeBuild
 .cxx
 
+# Signing material must never be committed. The real keystore lives outside
+# this repository entirely; these patterns are a safety net against an
+# accidental copy or a stray base64 dump landing here.
+*.jks
+*.keystore
+*.p12
+keystore.b64
+keystore.properties
+
 # IDE (Android Studio / IntelliJ) files.
 #
 # Ignore everything under .idea/ — it is per-developer machine state (selected
