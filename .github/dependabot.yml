@@ -1,0 +1,62 @@
+version: 2
+
+updates:
+  # ---------------------------------------------------------------------------
+  # App dependencies. Every version in this project lives in
+  # gradle/libs.versions.toml, so Dependabot edits the catalog rather than
+  # app/build.gradle.kts.
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore"
+    labels:
+      - "dependencies"
+    groups:
+      # Kotlin and KSP must move together — KSP versions are pinned to a
+      # specific Kotlin version, so a solo Kotlin bump breaks the build.
+      kotlin:
+        patterns:
+          - "org.jetbrains.kotlin*"
+          - "com.google.devtools.ksp*"
+      # More specific patterns must come first — a dependency joins the first
+      # group it matches, so "androidx.*" would otherwise swallow Room.
+      room:
+        patterns:
+          - "androidx.room*"
+      androidx:
+        patterns:
+          - "androidx.*"
+      test:
+        patterns:
+          - "junit*"
+          - "org.jetbrains.kotlinx:kotlinx-coroutines-test"
+          - "app.cash.turbine*"
+
+  # ---------------------------------------------------------------------------
+  # Workflow action versions. These went three majors stale unnoticed before
+  # CI was set up; this is the fix for that.
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    groups:
+      actions:
+        patterns:
+          - "*"
