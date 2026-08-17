@@ -34,6 +34,7 @@ fun AppNavigation() {
         ChecklistScreen(
             listId = list.id,
             listName = list.name,
+            dueDatesEnabled = list.dueDatesEnabled,
             onBack = { selectedList = null }
         )
     }
