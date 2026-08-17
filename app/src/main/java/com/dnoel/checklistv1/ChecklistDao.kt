@@ -16,6 +16,13 @@ interface ChecklistDao {
     @Query("SELECT listId, COUNT(*) as count FROM checklist_items WHERE isChecked = 0 GROUP BY listId")
     fun getRemainingCounts(): Flow<List<ListItemCount>>
 
+    /**
+     * One-shot read used by "sort by due date". Ties fall back to the current
+     * manual order so the result is deterministic rather than arbitrary.
+     */
+    @Query("SELECT * FROM checklist_items WHERE listId = :listId ORDER BY dueDate, position")
+    suspend fun getForListByDueDate(listId: Int): List<ChecklistItem>
+
     @Query("SELECT COALESCE(MAX(position), -1) FROM checklist_items WHERE listId = :listId")
     suspend fun getMaxPosition(listId: Int): Int
 

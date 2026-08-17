@@ -2,6 +2,14 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
+}
+
+// Room writes a JSON description of the schema for every version into this
+// directory. Committing those files is what makes a schema change reviewable
+// in a diff, and MigrationTestHelper reads them to build an old database.
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 // Release signing is driven entirely by environment variables so that no
@@ -59,6 +67,15 @@ android {
     buildFeatures {
         compose = true
     }
+    // MigrationTestHelper loads the exported schema JSON from the test assets.
+    // The Room plugin writes them to app/schemas but does not wire them into
+    // the unit-test source set, so do it explicitly.
+    sourceSets {
+        named("debug") {
+            assets.directories.add("$projectDir/schemas")
+        }
+    }
+
     testOptions {
         unitTests {
             // Robolectric needs the merged Android resources and manifest to
@@ -87,6 +104,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.room.testing)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [TodoList::class, ChecklistItem::class], version = 3)
+@Database(entities = [TodoList::class, ChecklistItem::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun checklistDao(): ChecklistDao
     abstract fun listDao(): ListDao
@@ -21,7 +21,10 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "checklist.db"
                 )
-                    .fallbackToDestructiveMigration(dropAllTables = true)
+                    // No destructive fallback any more: a schema change without
+                    // a matching Migration should fail loudly in development
+                    // rather than silently wipe a user's data.
+                    .addMigrations(MIGRATION_3_4)
                     .build().also { INSTANCE = it }
             }
         }

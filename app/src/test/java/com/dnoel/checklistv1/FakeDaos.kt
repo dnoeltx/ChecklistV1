@@ -37,6 +37,12 @@ class FakeListDao(initial: List<TodoList> = emptyList()) : ListDao {
         rows.value = rows.value.map { existing -> updates[existing.id] ?: existing }
     }
 
+    override suspend fun setDueDatesEnabled(listId: Int, enabled: Boolean) {
+        rows.value = rows.value.map {
+            if (it.id == listId) it.copy(dueDatesEnabled = enabled) else it
+        }
+    }
+
     override suspend fun delete(list: TodoList) {
         rows.value = rows.value.filterNot { it.id == list.id }
     }
@@ -60,6 +66,10 @@ class FakeChecklistDao(initial: List<ChecklistItem> = emptyList()) : ChecklistDa
                 .eachCount()
                 .map { (listId, count) -> ListItemCount(listId, count) }
         }
+
+    override suspend fun getForListByDueDate(listId: Int): List<ChecklistItem> =
+        rows.value.filter { it.listId == listId }
+            .sortedWith(compareBy({ it.dueDate }, { it.position }))
 
     override suspend fun getMaxPosition(listId: Int): Int =
         rows.value.filter { it.listId == listId }.maxOfOrNull { it.position } ?: -1
