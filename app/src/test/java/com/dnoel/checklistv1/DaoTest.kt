@@ -148,6 +148,46 @@ class DaoTest {
         assertEquals(-1, checklistDao.getMaxPosition(camping))
     }
 
+    // --- Due dates ---------------------------------------------------------
+
+    @Test
+    fun `a new item defaults to today's due date`() = runTest {
+        val groceries = listDao.insert(TodoList(name = "Groceries", position = 0)).toInt()
+        checklistDao.insert(ChecklistItem(listId = groceries, text = "Milk"))
+
+        assertEquals(todayIso(), checklistDao.getForList(groceries).first().single().dueDate)
+    }
+
+    @Test
+    fun `getForListByDueDate orders by date, falling back to position for ties`() = runTest {
+        val household = listDao.insert(TodoList(name = "Household", position = 0)).toInt()
+        checklistDao.insert(
+            ChecklistItem(listId = household, text = "Later", position = 0, dueDate = "2026-09-01")
+        )
+        checklistDao.insert(
+            ChecklistItem(listId = household, text = "TieB", position = 2, dueDate = "2026-08-18")
+        )
+        checklistDao.insert(
+            ChecklistItem(listId = household, text = "TieA", position = 1, dueDate = "2026-08-18")
+        )
+
+        val texts = checklistDao.getForListByDueDate(household).map { it.text }
+
+        assertEquals(listOf("TieA", "TieB", "Later"), texts)
+    }
+
+    @Test
+    fun `setDueDatesEnabled flips the flag on only that list`() = runTest {
+        val a = listDao.insert(TodoList(name = "Groceries", position = 0)).toInt()
+        val b = listDao.insert(TodoList(name = "Household", position = 1)).toInt()
+
+        listDao.setDueDatesEnabled(b, true)
+
+        val byId = listDao.getAll().first().associateBy { it.id }
+        assertEquals(false, byId.getValue(a).dueDatesEnabled)
+        assertEquals(true, byId.getValue(b).dueDatesEnabled)
+    }
+
     // --- Schema ------------------------------------------------------------
 
     @Test

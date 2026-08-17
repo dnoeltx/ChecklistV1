@@ -28,6 +28,24 @@ class ChecklistViewModel(
         }
     }
 
+    fun setDueDate(item: ChecklistItem, isoDate: String) {
+        viewModelScope.launch {
+            dao.update(item.copy(dueDate = isoDate))
+        }
+    }
+
+    /**
+     * Sorting is an action, not a view mode: it renumbers `position` so the new
+     * order persists and every query stays a plain ORDER BY position. The
+     * previous manual order is not recoverable afterwards.
+     */
+    fun sortByDueDate() {
+        viewModelScope.launch {
+            val sorted = dao.getForListByDueDate(listId)
+            dao.updateAll(sorted.mapIndexed { index, item -> item.copy(position = index) })
+        }
+    }
+
     fun reorder(newOrder: List<ChecklistItem>) {
         viewModelScope.launch {
             dao.updateAll(newOrder.mapIndexed { index, item -> item.copy(position = index) })

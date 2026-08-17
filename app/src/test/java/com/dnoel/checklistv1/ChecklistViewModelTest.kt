@@ -100,6 +100,37 @@ class ChecklistViewModelTest {
     }
 
     @Test
+    fun `sortByDueDate rewrites position into due-date order`() = runTest {
+        val dao = FakeChecklistDao(
+            listOf(
+                ChecklistItem(id = 1, listId = 1, text = "Later", position = 0, dueDate = "2026-09-01"),
+                ChecklistItem(id = 2, listId = 1, text = "Soon", position = 1, dueDate = "2026-08-18"),
+                ChecklistItem(id = 3, listId = 1, text = "Middle", position = 2, dueDate = "2026-08-25")
+            )
+        )
+
+        ChecklistViewModel(dao, listId = 1).sortByDueDate()
+
+        // Sorting is destructive by design: position is renumbered, so the
+        // previous manual order is gone rather than merely hidden.
+        assertEquals(listOf("Soon", "Middle", "Later"), dao.current.map { it.text })
+        assertEquals(listOf(0, 1, 2), dao.current.map { it.position })
+    }
+
+    @Test
+    fun `setDueDate changes only the targeted item`() = runTest {
+        val milk = ChecklistItem(id = 1, listId = 1, text = "Milk", dueDate = "2026-08-18")
+        val dao = FakeChecklistDao(
+            listOf(milk, ChecklistItem(id = 2, listId = 1, text = "Eggs", dueDate = "2026-08-19"))
+        )
+
+        ChecklistViewModel(dao, listId = 1).setDueDate(milk, "2026-12-25")
+
+        assertEquals("2026-12-25", dao.current.single { it.id == 1 }.dueDate)
+        assertEquals("2026-08-19", dao.current.single { it.id == 2 }.dueDate)
+    }
+
+    @Test
     fun `reorder renumbers positions from zero in the given order`() = runTest {
         val tent = ChecklistItem(id = 1, listId = 1, text = "Tent", position = 0)
         val bag = ChecklistItem(id = 2, listId = 1, text = "Sleeping bag", position = 1)

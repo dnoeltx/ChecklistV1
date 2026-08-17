@@ -21,6 +21,9 @@ interface ListDao {
     @Update
     suspend fun updateAll(lists: List<TodoList>)
 
+    @Query("UPDATE lists SET dueDatesEnabled = :enabled WHERE id = :listId")
+    suspend fun setDueDatesEnabled(listId: Int, enabled: Boolean)
+
     @Delete
     suspend fun delete(list: TodoList)
 }

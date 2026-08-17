@@ -31,6 +31,12 @@ class ListsViewModel(
         }
     }
 
+    fun setDueDatesEnabled(list: TodoList, enabled: Boolean) {
+        viewModelScope.launch {
+            listDao.setDueDatesEnabled(list.id, enabled)
+        }
+    }
+
     fun deleteList(list: TodoList) {
         viewModelScope.launch {
             listDao.delete(list)
