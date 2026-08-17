@@ -12,10 +12,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -118,6 +120,26 @@ fun ListsScreen(
                                     .clickable { onOpenList(entry.list) }
                                     .padding(vertical = 12.dp)
                             )
+                            IconToggleButton(
+                                checked = entry.list.dueDatesEnabled,
+                                onCheckedChange = { enabled ->
+                                    viewModel.setDueDatesEnabled(entry.list, enabled)
+                                }
+                            ) {
+                                Icon(
+                                    Icons.Filled.Event,
+                                    contentDescription = if (entry.list.dueDatesEnabled) {
+                                        "Turn off due dates for ${entry.list.name}"
+                                    } else {
+                                        "Turn on due dates for ${entry.list.name}"
+                                    },
+                                    tint = if (entry.list.dueDatesEnabled) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    }
+                                )
+                            }
                             IconButton(onClick = { viewModel.deleteList(entry.list) }) {
                                 Icon(Icons.Filled.Delete, contentDescription = "Delete list")
                             }

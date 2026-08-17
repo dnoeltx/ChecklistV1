@@ -12,15 +12,20 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,7 +43,12 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChecklistScreen(listId: Int, listName: String, onBack: () -> Unit) {
+fun ChecklistScreen(
+    listId: Int,
+    listName: String,
+    dueDatesEnabled: Boolean,
+    onBack: () -> Unit
+) {
     val viewModel: ChecklistViewModel = viewModel(
         key = "checklist_$listId",
         factory = ChecklistViewModel.factory(LocalContext.current.applicationContext, listId)
@@ -47,6 +57,9 @@ fun ChecklistScreen(listId: Int, listName: String, onBack: () -> Unit) {
     val visibleDbItems = dbItems.filter { !it.isChecked }
     var localItems by remember { mutableStateOf(visibleDbItems) }
     LaunchedEffect(visibleDbItems) { localItems = visibleDbItems }
+
+    // Non-null while the picker is open; holds the item being edited.
+    var editingDateFor by remember { mutableStateOf<ChecklistItem?>(null) }
 
     var newItemText by remember { mutableStateOf("") }
     val lazyListState = rememberLazyListState()
@@ -65,6 +78,13 @@ fun ChecklistScreen(listId: Int, listName: String, onBack: () -> Unit) {
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    if (dueDatesEnabled) {
+                        IconButton(onClick = { viewModel.sortByDueDate() }) {
+                            Icon(Icons.Filled.Sort, contentDescription = "Sort by due date")
+                        }
                     }
                 }
             )
@@ -121,6 +141,11 @@ fun ChecklistScreen(listId: Int, listName: String, onBack: () -> Unit) {
                                 onCheckedChange = { checked -> viewModel.setChecked(item, checked) }
                             )
                             Text(item.text, modifier = Modifier.weight(1f))
+                            if (dueDatesEnabled) {
+                                TextButton(onClick = { editingDateFor = item }) {
+                                    Text(formatIsoForDisplay(item.dueDate))
+                                }
+                            }
                             IconButton(
                                 modifier = Modifier.draggableHandle(
                                     onDragStopped = { viewModel.reorder(localItems) }
@@ -133,6 +158,35 @@ fun ChecklistScreen(listId: Int, listName: String, onBack: () -> Unit) {
                     }
                 }
             }
+        }
+    }
+
+    val editing = editingDateFor
+    if (editing != null) {
+        val pickerState = rememberDatePickerState(
+            initialSelectedDateMillis = utcMillisFromIso(editing.dueDate)
+        )
+        DatePickerDialog(
+            onDismissRequest = { editingDateFor = null },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        pickerState.selectedDateMillis?.let { millis ->
+                            viewModel.setDueDate(editing, isoFromUtcMillis(millis))
+                        }
+                        editingDateFor = null
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { editingDateFor = null }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = pickerState)
         }
     }
 }
